@@ -5,23 +5,31 @@ defmodule Rumbl.TestHelpers do
     Multimedia
   }
 
-  @user_attrs %{name: "some name", username: "username",
-    credential: %{email: "user@qq.com", password: "newpass"}}
-
   def user_fixture(attrs \\ %{}) do
+    username = "user#{System.unique_integer([:positive])}"
+
     {:ok, user} =
       attrs
-      |> Enum.into(@user_attrs)
+      |> Enum.into(%{
+        name: "user name",
+        username: username,
+        credential: %{
+          email: "#{username}@qq.com",
+          password: "newpass"
+        }
+      })
       |> Accounts.register_user()
 
     user
   end
 
-  @video_attrs %{description: "some description", title: "some title", url: "some url"}
-
   def video_fixture(%Accounts.User{} = user, attrs \\ %{}) do
-    attrs = Enum.into(attrs, @video_attrs)
+    attrs = Enum.into(attrs, %{
+      description: "some description", title: "some title", url: "some url",
+      category: %{name: "Comedy"}
+    })
     {:ok, video} = Multimedia.create_video(user, attrs)
     video
   end
+
 end
